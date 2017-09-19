@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">TaxiNdaani</string>
+    <string name="title_activity_maps">TaxiNdaani</string>
+    <string name="rationale_storage">you need to grant access to the phone\'s location information for the app to work</string>
+    <string name="title_location_permission">Location permission</string>
+    <string name="ok">ok</string>
+
+    <!--AuthActivity-->
+    <string name="enter_phone_hint">Enter phone number</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_invalid_phone">This phone number is invalid</string>
+    <string name="btn_verify_text">Verify</string>
+    <!--Auth Activity Dialog-->
+    <string name="positive_button_text">Ok</string>
+
+</resources>
