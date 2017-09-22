@@ -8,20 +8,35 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseTooManyRequestsException;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.Transaction;
 import com.ndaani.taxi.taxindaani.MainApplication;
 import com.ndaani.taxi.taxindaani.MapsActivity;
 import com.ndaani.taxi.taxindaani.R;
+import com.ndaani.taxi.taxindaani.model.AuthData;
 import com.ndaani.taxi.taxindaani.model.AuthResponse;
 import com.ndaani.taxi.taxindaani.networking.NetworkService;
 import com.ndaani.taxi.taxindaani.utils.PrefUtils;
 
 
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Handler;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -51,6 +66,13 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
     private AuthPresenter presenter;
     private PrefUtils prefUtils;
 
+    String mVerificationId;
+
+    android.os.Handler handler;
+
+
+
+    private static final String TAG = AuthActivity.class.getSimpleName();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,12 +97,15 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
         // Initialize NetworkService and Presenter classes
 
         NetworkService service = ((MainApplication) getApplicationContext()).getNetworkService();
-        presenter = new AuthPresenter(service, this);
+        presenter = new AuthPresenter(service, this, this);
+
+
 
     }
 
     @OnClick(R.id.btnVerify)
     public void verify() {
+
 
         // Reset errors.
         phoneNum.setError(null);
@@ -108,9 +133,10 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
             // form field with an error.
             focusView.requestFocus();
         } else {
+            presenter.verifyPhoneNumber(phone);
 
             // Pass the phone number inputted by the user to the presenter which will then send it to the API
-            presenter.verifyAgent(phone);
+//            presenter.verifyAgent(phone);
         }
     }
 
@@ -136,12 +162,21 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
     }
 
     @Override
-    public void setAuthResponse(AuthResponse authResponse) {
+    public void setVerificationId(String verificationId) {
+        mVerificationId = verificationId;
+    }
+
+    @Override
+    public void setAuthResponse(FirebaseUser user) {
 
         // store user access token in SharedPreference
-        prefUtils.setUserAccessToken(String.format(Locale.ENGLISH, "%s %s", authResponse.getTokenType(), authResponse.getAccessToken()));
+        //prefUtils.setUserAccessToken(String.format(Locale.ENGLISH, "%s %s", authResponse.getTokenType(), authResponse.getAccessToken()));
         // store user details in SharedPreference
-        prefUtils.storeUserDetails(authResponse.getUser().getName(), authResponse.getUser().getPhone());
+       // prefUtils.storeUserDetails(authResponse.getUser().getName(), authResponse.getUser().getPhone());
+        System.out.println("user "+user.getPhoneNumber());
+
+        prefUtils.storeUserDetails(user.getPhoneNumber());
+        prefUtils.setUserId(user.getUid());
 
         // redirect user to MainActivity
         Intent intent = new Intent(AuthActivity.this, MapsActivity.class);
@@ -185,5 +220,29 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
             }
         });
 
+    }
+
+    public AuthPresenter getPresenter() {
+        return presenter;
+    }
+
+    public String getVerificationId() {
+        return mVerificationId;
+    }
+    @Override
+    public void showDialog() {
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+
+
+        // Create and show the dialog.
+        DialogFragment newFragment = EnterCodeDialog.newInstance();
+        newFragment.show(ft, "dialog");
     }
 }

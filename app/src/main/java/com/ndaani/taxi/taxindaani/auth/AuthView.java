@@ -1,6 +1,7 @@
 package com.ndaani.taxi.taxindaani.auth;
 
 
+import com.google.firebase.auth.FirebaseUser;
 import com.ndaani.taxi.taxindaani.model.AuthResponse;
 
 /**
@@ -15,5 +16,9 @@ public interface AuthView {
 
     void onFailure(String message, String description, int code);
 
-    void setAuthResponse(AuthResponse authResponse);
+    void showDialog();
+
+    void setVerificationId(String verificationId);
+
+    void setAuthResponse(FirebaseUser user);
 }

@@ -90,8 +90,8 @@ public class PrefUtils {
         return sharedPreferencesCompat.getInt(KEY_USER_ID, 0);
     }
 
-    public void setUserId(int user_id) {
-        editor.putInt(KEY_USER_ID, user_id);
+    public void setUserId(String user_id) {
+        editor.putString(KEY_USER_ID, user_id);
         editor.commit();
     }
 
@@ -102,8 +102,14 @@ public class PrefUtils {
     }
 
 
-    public void storeUserDetails(String name, String phone) {
-        editor.putString(KEY_NAME, name);
+    public void logOutUser(){
+        editor.putBoolean(KEY_IS_LOGGED_IN, false);
+        editor.commit();
+    }
+
+
+    public void storeUserDetails(String phone) {
+
         editor.putString(KEY_PHONE, phone);
         editor.putBoolean(KEY_IS_LOGGED_IN, true);
         editor.commit();
@@ -111,7 +117,7 @@ public class PrefUtils {
 
     public HashMap<String, String> getUserDetails() {
         HashMap<String, String> profile = new HashMap<>();
-        profile.put("name", sharedPreferencesCompat.getString(KEY_NAME, null));
+      //  profile.put("name", sharedPreferencesCompat.getString(KEY_NAME, null));
         profile.put("phone", sharedPreferencesCompat.getString(KEY_PHONE, null));
         return profile;
     }

@@ -7,6 +7,7 @@ package com.ndaani.taxi.taxindaani.utils;
 
 public class Constants {
 
+ // placeHolder API_BASE_URL;
  public static final String API_BASE_URL = "https://www.google.com";
 
  public static final String OTP_SENDER_ID = "AFRICASTKNG";
