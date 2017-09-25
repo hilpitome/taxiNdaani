@@ -246,23 +246,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         navItemIndex = 0;
                         CURRENT_TAG = TAG_HOME;
                         showToast("we are home already");
-
+                        drawer.closeDrawer(Gravity.START);
                         break;
                     case R.id.nav_my_payments:
                         navItemIndex = 1;
                         CURRENT_TAG = TAG_PAYMENTS;
                         showToast("payments coming soon");
+                        drawer.closeDrawer(Gravity.START);
                         break;
 
                     case R.id.nav_notifications:
                         navItemIndex = 2;
                         CURRENT_TAG = TAG_NOTIFICATIONS;
                         showToast("notification coming soon");
+                        drawer.closeDrawer(Gravity.START);
                         break;
                     case R.id.nav_settings:
                         navItemIndex = 3;
                         CURRENT_TAG = TAG_SETTINGS;
                         showToast("settings coming soon!");
+                        drawer.closeDrawer(Gravity.START);
                         break;
                     case R.id.nav_about_us:
                         // launch new intent instead of loading fragment
@@ -276,6 +279,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         drawer.closeDrawers();
                         FirebaseAuth.getInstance().signOut();
                         mPrefUtils.logOutUser();
+                        startActivity(new Intent(MapsActivity.this, AuthActivity.class));
                         return true;
                     default:
                         navItemIndex = 0;
